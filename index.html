@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>妳好呢</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;900&display=swap">
+<style>
+[hidden]{display:none!important}
+/* Layout: one centered card on a soft tinted ground; form swaps to a big reveal on submit. */
+:root {
+  --bg: #d9eefb;
+  --surface: #fffbee;
+  --fg: #5a3a28;
+  --muted: #86665a;
+  --line: #f1d98f;
+  --accent: #f4b92e;
+  --accent-fg: #4a2c1a;
+  --err: #b42318;
+  --cloud: rgba(255, 255, 255, 0.85);
+  --font-display: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b2a3a; --surface: #263748; --fg: #fff3d6; --muted: #c9b79a;
+    --line: #4d6076; --accent: #ffd25e; --accent-fg: #3b2414; --err: #ff8a80;
+    --cloud: rgba(255, 255, 255, 0.09);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b2a3a; --surface: #263748; --fg: #fff3d6; --muted: #c9b79a;
+  --line: #4d6076; --accent: #ffd25e; --accent-fg: #3b2414; --err: #ff8a80;
+  --cloud: rgba(255, 255, 255, 0.09);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-block: 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+main { width: 100%; max-width: 420px; min-width: 0; position: relative; }
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 150px 46px at 18% 12%, var(--cloud) 96%, transparent),
+    radial-gradient(ellipse 90px 40px at 26% 10%, var(--cloud) 96%, transparent),
+    radial-gradient(ellipse 170px 50px at 84% 30%, var(--cloud) 96%, transparent),
+    radial-gradient(ellipse 100px 42px at 76% 27%, var(--cloud) 96%, transparent),
+    radial-gradient(ellipse 160px 48px at 22% 82%, var(--cloud) 96%, transparent),
+    radial-gradient(ellipse 90px 38px at 30% 79%, var(--cloud) 96%, transparent);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  border-width: 2px;
+  padding: 28px 24px;
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2rem;
+  line-height: 1.2;
+  margin: 0 0 4px;
+  text-wrap: balance;
+}
+.sub { color: var(--muted); margin: 0 0 24px; font-size: 0.9rem; }
+form { display: grid; gap: 18px; }
+.field { display: grid; gap: 6px; }
+label, legend { font-weight: 500; font-size: 0.9rem; letter-spacing: 0.04em; }
+input[type="text"], input[type="tel"], input[type="number"] {
+  width: 100%;
+  font: inherit;
+  color: var(--fg);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+input:focus-visible, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 8px; min-width: 0; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choices label {
+  display: flex; align-items: center; gap: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.choices input { accent-color: var(--accent); width: 18px; height: 18px; margin: 0; }
+.choices label:has(input:checked) { border-color: var(--accent); }
+.err { color: var(--err); font-size: 0.85rem; min-height: 1.2em; margin: 0; }
+button {
+  font: inherit;
+  font-weight: 500;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  cursor: pointer;
+}
+button:hover { filter: brightness(1.06); }
+button.ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--line); }
+.reveal { text-align: center; display: grid; gap: 20px; padding-block: 24px; }
+.reveal .big {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(3rem, 18vw, 4.5rem);
+  line-height: 1.1;
+  color: var(--accent);
+  margin: 0;
+  animation: pop 0.5s ease-out both;
+}
+@keyframes pop { from { transform: scale(0.85); opacity: 0.2; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .reveal .big { animation: none; } }
+.note { color: var(--muted); font-size: 0.8rem; text-align: center; margin: 16px 0 0; }
+</style>
+</head>
+<body>
+
+<main>
+  <section class="card" id="formView">
+    <h1>妳好呢</h1>
+    <p class="sub">填完資料,按送出就知道。</p>
+    <form id="f" novalidate>
+      <div class="field">
+        <label for="name">啥子名</label>
+        <input id="name" type="text" autocomplete="off" placeholder="你的名字">
+      </div>
+      <div class="field">
+        <label for="phone">電話給我</label>
+        <input id="phone" type="tel" inputmode="numeric" autocomplete="off" placeholder="0912345678">
+      </div>
+      <div class="field">
+        <label for="age">幾歲哩</label>
+        <input id="age" type="number" inputmode="numeric" min="1" max="120" placeholder="1 到 120">
+      </div>
+      <fieldset>
+        <legend>性別</legend>
+        <div class="choices">
+          <label><input type="radio" name="gender" value="1" id="g1">gay</label>
+          <label><input type="radio" name="gender" value="2" id="g2">very gay</label>
+          <label><input type="radio" name="gender" value="3" id="g3">其他</label>
+        </div>
+      </fieldset>
+      <p class="err" id="err" role="alert"></p>
+      <button type="submit" id="submit">送出</button>
+    </form>
+    <p class="note">資料只留在你的畫面上,不會傳送或儲存。</p>
+  </section>
+
+  <section class="card reveal" id="resultView" hidden>
+    <p class="big" id="resultText"></p>
+    <button type="button" class="ghost" id="again">再玩一次</button>
+  </section>
+</main>
+
+<script>
+(function () {
+  var f = document.getElementById("f");
+  var err = document.getElementById("err");
+  var formView = document.getElementById("formView");
+  var resultView = document.getElementById("resultView");
+
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("name").value.trim();
+    var phone = document.getElementById("phone").value.trim();
+    var age = parseInt(document.getElementById("age").value, 10);
+    var gender = f.querySelector('input[name="gender"]:checked');
+
+    if (!name) { err.textContent = "請輸入名字。"; return; }
+    if (!/^[0-9]{8,12}$/.test(phone)) { err.textContent = "電話請輸入 8 到 12 位數字。"; return; }
+    if (isNaN(age) || age < 1 || age > 120) { err.textContent = "年齡請輸入 1 到 120 的數字。"; return; }
+    if (!gender) { err.textContent = "請選一個性別。"; return; }
+
+    err.textContent = "";
+    document.getElementById("resultText").textContent = ({ "1": "美女嚕", "2": "辣妹嚕", "3": "小雞雞嚕" })[gender.value];
+    formView.hidden = true;
+    resultView.hidden = false;
+  });
+
+  document.getElementById("again").addEventListener("click", function () {
+    f.reset();
+    resultView.hidden = true;
+    formView.hidden = false;
+  });
+})();
+</script>
+
+</body>
+</html>
